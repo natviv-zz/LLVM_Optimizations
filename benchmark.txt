@@ -1,0 +1,40 @@
+For LICM, my benchmark testing code has the following psuedocode
+i>
+for(;;)
+{
+i++
+//Invariant code
+if (i>100000)
+break;
+//code with no further use in loop  
+}
+ii>
+for(i=0;i<1000;i++)
+for(j=0;j<1000;j++)
+for(k=0;k<1000;k++)
+d=i*j*k;
+
+The results are reported on average run times of the order of x=20000ms. Not reporting exact runtime because of considerable variance over different runs.
+i>llvm-licm>licm>unoptimized (0.7x:1x:2x)
+My reasoning for this case is llvm licm pass also does sinking of code apart from hoisting invariant code based on domination. 
+The licm pass implemented for this assignment is conservative in nature
+ii>llvm-licm~>licm>unoptimized (0.6x:1x:1.5x)
+Here the difference is due to the fact that there is no code to sink and hence the runtimes are almost similar.  
+
+For DCE, my test code had the dead code in a loop
+while(i<100000)
+{
+x=x+1;
+a=x-2;
+b=a-3;
+c=d+5;
+}
+return 0;
+
+In this case the timings were under 100 ms.
+The performance order is:
+llvm-dce>dce~>unoptimized (0.5x:1x:1x)
+The difference in timings was not a lot and needs to be reliably ascertained as far as performance is concerned. My DCE implementation is probably very conservative. Hence shows similar very similar timings to unoptimized results.
+  
+PS: I have the timing results for the 10 runs. Please let me know if required. I have not included it because of the large value variance and not certain of the veracity.
+Idea for benchmark suites came from Piazza discussion. Discussed with Raghavendra regarding handling phi nodes for DCE.
